@@ -14,7 +14,18 @@ spec:
     spec:
       containers:
         - name: flask-app
-          image: sre-playground-backend:1.0.1
+          image: sre-playground-backend:1.0.2
+          env:
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              value: "postgres"
+            - name: POSTGRES_DB
+              value: "postgres"
+            - name: POSTGRES_HOST
+              value: "my-postgres-postgresql.database.svc.cluster.local"
+            - name: POSTGRES_PORT
+              value: "5432"
           ports:
             - containerPort: 3000
 ---

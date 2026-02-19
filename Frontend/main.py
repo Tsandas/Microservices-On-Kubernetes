@@ -7,7 +7,6 @@ app = Flask(__name__)
 
 HOSTNAME = os.getenv("HOSTNAME", "unknown")
 BACKEND_BASE = os.getenv("BACKEND_BASE", "http://localhost:3000")
-# http://host.docker.internal:3000
 HTML = """
 <!doctype html>
 <html>
@@ -35,6 +34,11 @@ HTML = """
       <button name="action" value="get_data">Get Random Data</button>
     </form>
 
+    <h2>GET /user</h2>
+    <form method="post">
+      <button name="action" value="get_users">Get All Users</button>
+    </form>
+
     {% if response %}
       <div id="response"><strong>Response:</strong><br>{{ response }}</div>
     {% endif %}
@@ -56,6 +60,10 @@ def index():
 
             elif action == "get_data":
                 res = requests.get(f"{BACKEND_BASE}/data")
+                response_text = json.dumps(res.json(), indent=2)
+
+            elif action == "get_users":
+                res = requests.get(f"{BACKEND_BASE}/user")
                 response_text = json.dumps(res.json(), indent=2)
 
         except Exception as e:

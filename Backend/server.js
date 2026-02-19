@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import pool from "./config/pg.js";
 
 dotenv.config();
 
@@ -18,7 +19,7 @@ app.get("/data", (req, res) => {
   res.json({ value: random, pod: HOSTNAME });
 });
 
-app.post("/user", (req, res) => {
+app.post("/user", async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
     return res
@@ -26,13 +27,25 @@ app.post("/user", (req, res) => {
       .json({ error: "Username and password are required" });
   }
 
+  const query =
+    "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id";
+  const values = [username, password];
+  const result = await pool.query(query, values);
+
   res.status(201).json({
-    userId: Math.floor(Math.random() * 1000),
+    userId: result.rows[0].id,
     username,
     pod: HOSTNAME,
   });
 });
 
-app.listen(PORT, () => {
+app.get("/user", async (req, res) => {
+  const query = "SELECT * FROM users LIMIT 10";
+  const result = await pool.query(query);
+  res.json(result.rows);
+});
+
+app.listen(PORT, async () => {
+  await pool.connect();
   console.log(`Backend server running on http://localhost:${PORT}`);
 });
