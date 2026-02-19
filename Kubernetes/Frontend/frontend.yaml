@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: flask-app
-          image: sre-playground-frontend:1.0.1
+          image: sre-playground-frontend:1.0.2
           env:
             - name: BACKEND_BASE
               value: "http://backend-service:3000"
