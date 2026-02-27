@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
+  namespace: frontend
 spec:
   replicas: 3
   selector:
@@ -17,7 +18,7 @@ spec:
           image: sre-playground-frontend:1.0.2
           env:
             - name: BACKEND_BASE
-              value: "http://backend-service:3000"
+              value: "http://backend-service.backend.svc.cluster.local:3000"
           ports:
             - containerPort: 5000
 ---
@@ -25,6 +26,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: frontend-service
+  namespace: frontend
 spec:
   selector:
     app: frontend
@@ -38,6 +40,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: frontend-ingress
+  namespace: frontend
 spec:
   rules:
     - host: localhost

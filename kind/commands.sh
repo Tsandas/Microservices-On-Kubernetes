@@ -10,4 +10,4 @@ remove         ingress-ready: "true"
 
 
 
-kubectl port-forward -n ingress-nginx pod/ingress-nginx-controller-7d45bb6d5d-gmcjh 80:80
+kubectl port-forward -n ingress-nginx pod/ingress-nginx-controller-7d45bb6d5d-mzl26 80:80

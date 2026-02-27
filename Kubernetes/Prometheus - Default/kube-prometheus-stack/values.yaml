@@ -1223,8 +1223,8 @@ alertmanager:
 ## Using default values from https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
 ##
 grafana:
-  enabled: false
-  namespaceOverride: ""
+  enabled: true
+  namespaceOverride: "grafana"
 
   ## ForceDeployDatasources Create datasource configmap even if grafana deployment has been disabled
   ##
@@ -5449,26 +5449,41 @@ cleanPrometheusOperatorObjectNames: false
 ## Extra manifests to deploy.  Can be of type dict or list.
 ## If dict, keys are ignored and only values are used.
 ## Items contained within extraObjects can be defined as dict or string and are passed through tpl.
-extraManifests: null
-  # - apiVersion: v1
-  #   kind: ConfigMap
-  #   metadata:
-  #   labels:
-  #     name: prometheus-extra
-  #   data:
-  #     extra-data: "value"
-  #
-  # can also be defined as a string, useful for templating field names
-  # - |
-  #   apiVersion: v1
-  #   kind: Secret
-  #   type: Opaque
-  #   metadata:
-  #     name: super-secret
-  #     labels:
-  #       {{- range $key, $value := .Values.commonLabels }}
-  #       {{ $key }}: {{ $value }}
-  #       {{- end }}
-  #   data:
-  #     plaintext: Zm9vYmFy
-  #     templated: '{{ print "foobar" | upper | b64enc }}'
+extraManifests: 
+  - apiVersion: monitoring.coreos.com/v1
+    kind: ServiceMonitor
+    metadata:
+      name: postgres-exporter
+      namespace: database
+      labels:
+        release: kubernetes-prometheus-stack  # must match Prometheus serviceMonitorSelector
+    spec:
+      selector:
+        matchLabels:
+          app.kubernetes.io/component: metrics
+      namespaceSelector:
+        matchNames:
+          - database
+      endpoints:
+        - port: http-metrics
+          path: /metrics
+          interval: 30s
+
+  - apiVersion: monitoring.coreos.com/v1
+    kind: ServiceMonitor
+    metadata:
+      name: postgres-exporter-read
+      namespace: database
+      labels:
+        release: kubernetes-prometheus-stack
+    spec:
+      selector:
+        matchLabels:
+          app.kubernetes.io/component: metrics-read
+      namespaceSelector:
+        matchNames:
+          - database
+      endpoints:
+        - port: http-metrics
+          path: /metrics
+          interval: 30s
