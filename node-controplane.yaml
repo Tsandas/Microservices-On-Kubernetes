@@ -1,0 +1,170 @@
+apiVersion: v1
+kind: Node
+metadata:
+  annotations:
+    csi.volume.kubernetes.io/nodeid: '{"csi.tigera.io":"controplane"}'
+    node.alpha.kubernetes.io/ttl: "0"
+    projectcalico.org/IPv4Address: 192.168.56.101/24
+    projectcalico.org/IPv4VXLANTunnelAddr: 192.168.145.0
+    projectcalico.org/Interfaces: '[{"name":"bpfin.cali"},{"name":"bpfout.cali"},{"name":"enp0s3","addresses":["10.0.2.15"]},{"name":"enp0s8","addresses":["192.168.56.101"]}]'
+    volumes.kubernetes.io/controller-managed-attach-detach: "true"
+  creationTimestamp: "2026-03-04T17:42:24Z"
+  labels:
+    beta.kubernetes.io/arch: amd64
+    beta.kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    kubernetes.io/hostname: controplane
+    kubernetes.io/os: linux
+    node-role.kubernetes.io/control-plane: ""
+    node.kubernetes.io/exclude-from-external-load-balancers: ""
+  name: controplane
+  resourceVersion: "20260"
+  uid: d870fa30-b7cc-46e2-a2e3-5f34b836469a
+spec:
+  podCIDR: 192.168.0.0/24
+  podCIDRs:
+  - 192.168.0.0/24
+status:
+  addresses:
+  - address: 192.168.56.101
+    type: InternalIP
+  - address: controplane
+    type: Hostname
+  allocatable:
+    cpu: "2"
+    ephemeral-storage: "23614875609"
+    hugepages-2Mi: "0"
+    memory: 3907552Ki
+    pods: "110"
+  capacity:
+    cpu: "2"
+    ephemeral-storage: 25623780Ki
+    hugepages-2Mi: "0"
+    memory: 4009952Ki
+    pods: "110"
+  conditions:
+  - lastHeartbeatTime: "2026-03-04T18:42:51Z"
+    lastTransitionTime: "2026-03-04T18:42:51Z"
+    message: Calico is running on this node
+    reason: CalicoIsUp
+    status: "False"
+    type: NetworkUnavailable
+  - lastHeartbeatTime: "2026-03-04T20:32:53Z"
+    lastTransitionTime: "2026-03-04T17:42:20Z"
+    message: kubelet has sufficient memory available
+    reason: KubeletHasSufficientMemory
+    status: "False"
+    type: MemoryPressure
+  - lastHeartbeatTime: "2026-03-04T20:32:53Z"
+    lastTransitionTime: "2026-03-04T17:42:20Z"
+    message: kubelet has no disk pressure
+    reason: KubeletHasNoDiskPressure
+    status: "False"
+    type: DiskPressure
+  - lastHeartbeatTime: "2026-03-04T20:32:53Z"
+    lastTransitionTime: "2026-03-04T17:42:20Z"
+    message: kubelet has sufficient PID available
+    reason: KubeletHasSufficientPID
+    status: "False"
+    type: PIDPressure
+  - lastHeartbeatTime: "2026-03-04T20:32:53Z"
+    lastTransitionTime: "2026-03-04T20:17:58Z"
+    message: kubelet is posting ready status
+    reason: KubeletReady
+    status: "True"
+    type: Ready
+  daemonEndpoints:
+    kubeletEndpoint:
+      Port: 10250
+  images:
+  - names:
+    - quay.io/calico/node@sha256:2a3656eb74aa76a697dec178dc089462a908c66360a838513f0c00c7245c5e6f
+    - quay.io/calico/node:v3.31.4
+    sizeBytes: 159839046
+  - names:
+    - quay.io/calico/cni@sha256:210055d9682571ee5d6f724d774b54ef524ba7da51379abb6adc73b93eccd07f
+    - quay.io/calico/cni:v3.31.4
+    sizeBytes: 72168334
+  - names:
+    - quay.io/calico/goldmane@sha256:2be359075ff772530fe1db9d674eaa3b7b39cda31c3f6dd297bc8ece7d9082d0
+    - quay.io/calico/goldmane:v3.31.4
+    sizeBytes: 55623850
+  - names:
+    - quay.io/calico/kube-controllers@sha256:89d02983f8cc13661bb07b172d4e298f60f5e9c5b26e3626d8e5caa0a66b1469
+    - quay.io/calico/kube-controllers:v3.31.4
+    sizeBytes: 53962979
+  - names:
+    - quay.io/calico/apiserver@sha256:aed2e5e0c75856b6f57669ebcf84632584276c50e5221de3b62b434780113b0d
+    - quay.io/calico/apiserver:v3.31.4
+    sizeBytes: 49972459
+  - names:
+    - quay.io/tigera/operator@sha256:53260704fc6e638633b243729411222e01e1898647352a6e1a09cc046887973a
+    - quay.io/tigera/operator:v1.40.7
+    sizeBytes: 40842151
+  - names:
+    - quay.io/calico/typha@sha256:fe76bfa262469cea88f2dd22914eb6eea47db0aa569f18e8cc0f02d223a6fe94
+    - quay.io/calico/typha:v3.31.4
+    sizeBytes: 36108068
+  - names:
+    - registry.k8s.io/kube-apiserver@sha256:68cdc586f13b13edb7aa30a18155be530136a39cfd5ef8672aad8ccc98f0a7f7
+    - registry.k8s.io/kube-apiserver:v1.35.2
+    sizeBytes: 27693066
+  - names:
+    - registry.k8s.io/kube-proxy@sha256:015265214cc874b593a7adccdcfe4ac15d2b8e9ae89881bdcd5bcb99d42e1862
+    - registry.k8s.io/kube-proxy:v1.35.2
+    sizeBytes: 25684331
+  - names:
+    - registry.k8s.io/etcd@sha256:60a30b5d81b2217555e2cfb9537f655b7ba97220b99c39ee2e162a7127225890
+    - registry.k8s.io/etcd:3.6.6-0
+    sizeBytes: 23641797
+  - names:
+    - registry.k8s.io/coredns/coredns@sha256:9b9128672209474da07c91439bf15ed704ae05ad918dd6454e5b6ae14e35fee6
+    - registry.k8s.io/coredns/coredns:v1.13.1
+    sizeBytes: 23553139
+  - names:
+    - registry.k8s.io/kube-controller-manager@sha256:d9784320a41dd1b155c0ad8fdb5823d60c475870f3dd23865edde36b585748f2
+    - registry.k8s.io/kube-controller-manager:v1.35.2
+    sizeBytes: 23142311
+  - names:
+    - quay.io/calico/whisker-backend@sha256:a602fb51a5e39fe224c534cceaec936545adddc467a37f3139dab5205b8bf7dd
+    - quay.io/calico/whisker-backend:v3.31.4
+    sizeBytes: 17609923
+  - names:
+    - registry.k8s.io/kube-scheduler@sha256:5833e2c4b779215efe7a48126c067de199e86aa5a86518693adeef16db0ff943
+    - registry.k8s.io/kube-scheduler:v1.35.2
+    sizeBytes: 17240058
+  - names:
+    - quay.io/calico/node-driver-registrar@sha256:543c06f445c106114e0a8b7adf1ac38de6696987c1b9b2c1e31ebdc1513d9052
+    - quay.io/calico/node-driver-registrar:v3.31.4
+    sizeBytes: 16260932
+  - names:
+    - quay.io/calico/csi@sha256:6085d3027e413f15a9c1a6c8bc5e6779d55324a3a799d32749477cd5bd95de41
+    - quay.io/calico/csi:v3.31.4
+    sizeBytes: 10349165
+  - names:
+    - quay.io/calico/whisker@sha256:9690cd395efad501f2e0c40ce4969d87b736ae2e5ed454644e7b0fd8f756bfbc
+    - quay.io/calico/whisker:v3.31.4
+    sizeBytes: 7595926
+  - names:
+    - quay.io/calico/pod2daemon-flexvol@sha256:6d491b1e0953619fdea8c095299ed8908e633ec03e420c9d76cc4d41f5402d70
+    - quay.io/calico/pod2daemon-flexvol:v3.31.4
+    sizeBytes: 6186873
+  - names:
+    - registry.k8s.io/pause@sha256:278fb9dbcca9518083ad1e11276933a2e96f23de604a3a08cc3c80002767d24c
+    - registry.k8s.io/pause:3.10.1
+    sizeBytes: 320448
+  - names:
+    - registry.k8s.io/pause@sha256:9001185023633d17a2f98ff69b6ff2615b8ea02a825adffa40422f51dfdcde9d
+    - registry.k8s.io/pause:3.8
+    sizeBytes: 311286
+  nodeInfo:
+    architecture: amd64
+    bootID: 35287f91-045d-4605-b8e3-4e1099820fa0
+    containerRuntimeVersion: containerd://1.7.28
+    kernelVersion: 6.8.0-101-generic
+    kubeProxyVersion: ""
+    kubeletVersion: v1.35.2
+    machineID: 843a448d30e54c82b705b44cd681daff
+    operatingSystem: linux
+    osImage: Ubuntu 24.04.4 LTS
+    systemUUID: 06f32b35-d30e-ae47-9a73-d07b083070e5
