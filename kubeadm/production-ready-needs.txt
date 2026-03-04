@@ -1,0 +1,18 @@
+Must have for production:
+HA Control Plane — minimum 3 control plane nodes with etcd replicated across them. Single control plane = single point of failure for the entire cluster.
+
+etcd backup — automated snapshots (cronjob with etcdctl snapshot save). HA protects against node failure, backups protect against data corruption.
+
+Real Load Balancer — MetalLB on bare metal, or a cloud LB. NodePort with a manual port forward is not viable at scale and has no failover.
+
+Network Policies — default deny between namespaces at minimum. Without this every pod can reach every other pod freely, which is a security and blast-radius problem.
+
+Node resource reservations — reserve CPU/RAM for system processes (--kube-reserved, --system-reserved on kubelet) so system pods can't be starved by workloads.
+
+
+Nice to have:
+Cluster autoscaler — automatically add/remove nodes based on pending pods and resource pressure.
+
+Pod Disruption Budgets — guarantee minimum availability during node drains and upgrades.
+
+Kubeadm upgrade plan — a documented process for upgrading Kubernetes versions without downtime.
