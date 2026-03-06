@@ -18,9 +18,22 @@ spec:
           image: dpage/pgadmin4:latest
           env:
             - name: PGADMIN_DEFAULT_EMAIL
-              value: "admin@example.com"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: PGADMIN_DEFAULT_EMAIL
             - name: PGADMIN_DEFAULT_PASSWORD
-              value: "secretpassword"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: PGADMIN_DEFAULT_PASSWORD
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "150m"
+            limits:
+              memory: "256Mi"
+              cpu: "150m"
           ports:
             - containerPort: 80
           volumeMounts:
@@ -39,7 +52,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: standard
+  storageClassName: local-path
   resources:
     requests:
       storage: 1Gi
@@ -47,7 +60,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: pgadmin
+  name: pgadmin-service
   namespace: database
 spec:
   selector:
@@ -64,6 +77,7 @@ metadata:
   name: pgadmin-ingress
   namespace: database
 spec:
+  ingressClassName: nginx
   rules:
     - host: pgadmin.localhost
       http:
@@ -72,6 +86,50 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: pgadmin
+                name: pgadmin-service
                 port:
                   number: 80
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secret
+  namespace: database
+type: Opaque
+data:
+  PGADMIN_DEFAULT_EMAIL: Z2VvcmdldHNhbmRla2lkaXNAZ21haWwuY29t
+  PGADMIN_DEFAULT_PASSWORD: MTIzNDU2Nzg=
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: pgadmin-network-policy
+  namespace: database
+spec:
+  podSelector:
+    matchLabels:
+      app: pgadmin
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - {}
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: postgres-db
+      ports:
+        - protocol: TCP
+          port: 5432
+    # DNS - required for service discovery
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---

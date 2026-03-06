@@ -26,3 +26,6 @@ sudo apt-mark hold kubelet kubeadm kubectl
 
 # sudo nano /etc/default/kubelet
 # KUBELET_EXTRA_ARGS=--node-ip={ipad}
+
+
+# Create default storage class

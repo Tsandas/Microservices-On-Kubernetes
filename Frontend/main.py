@@ -71,6 +71,20 @@ def index():
 
     return render_template_string(HTML, response=response_text, hostname=HOSTNAME)
 
+@app.route("/healthz/live")
+def liveness():
+    return {"status": "ok"}, 200
+
+@app.route("/healthz/ready")
+def readiness():
+    try:
+        res = requests.get(f"{BACKEND_BASE}/healthz/live", timeout=2)
+        if res.status_code == 200:
+            return {"status": "ready"}, 200
+        return {"status": "backend unavailable"}, 503
+    except Exception:
+        return {"status": "backend unreachable"}, 503
+
 if __name__ == "__main__":
     port = int(os.getenv("FRONTEND_PORT", 5000))
     app.run(host="0.0.0.0", port=port)

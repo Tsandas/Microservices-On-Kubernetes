@@ -1,3 +1,10 @@
+## Notes
+## Changes
+## auth
+## architecture:, either standalone or with replicas
+## replicaCount 
+## volume size
+
 # Copyright Broadcom, Inc. All Rights Reserved.
 # SPDX-License-Identifier: APACHE-2.0
 
@@ -829,7 +836,7 @@ primary:
       - ReadWriteOnce
     ## @param primary.persistence.size PVC Storage Request for PostgreSQL volume
     ##
-    size: 8Gi
+    size: 4Gi
     ## @param primary.persistence.annotations Annotations for the PVC
     ##
     annotations: {}
@@ -1291,7 +1298,7 @@ readReplicas:
       - ReadWriteOnce
     ## @param readReplicas.persistence.size PVC Storage Request for PostgreSQL volume
     ##
-    size: 8Gi
+    size: 2Gi
     ## @param readReplicas.persistence.annotations Annotations for the PVC
     ##
     annotations: {}

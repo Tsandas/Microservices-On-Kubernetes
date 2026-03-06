@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: frontend
+  labels:
+    env: prod
+    managed-by: kubectl
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: backend
+  labels:
+    env: prod
+    managed-by: kubectl
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: database
+  labels:
+    env: prod
+    managed-by: helm
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    env: prod
+    managed-by: helm
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: redis
+  labels:
+    env: prod
+    managed-by: helm
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kafka
+  labels:
+    env: prod
+    managed-by: helm
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: workers
+  labels:
+    env: prod
+    managed-by: kubectl

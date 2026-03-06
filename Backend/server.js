@@ -49,3 +49,16 @@ app.listen(PORT, async () => {
   await pool.connect();
   console.log(`Backend server running on http://localhost:${PORT}`);
 });
+
+app.get("/healthz/live", async (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
+app.get("/healthz/ready", async (req, res) => {
+  try {
+    await pool.query("SELECT 1");
+    res.status(200).json({ status: "ready" });
+  } catch (error) {
+    res.status(500).json({ status: "unready", error: error.message });
+  }
+});
