@@ -77,13 +77,22 @@ def liveness():
 
 @app.route("/healthz/ready")
 def readiness():
+    print(f"Readiness check started, BACKEND_BASE={BACKEND_BASE}", flush=True)
     try:
-        res = requests.get(f"{BACKEND_BASE}/healthz/live", timeout=2)
+        res = requests.get(f"{BACKEND_BASE}/healthz/live", timeout=10)
+        print(f"Backend responded with status={res.status_code}", flush=True)
         if res.status_code == 200:
             return {"status": "ready"}, 200
-        return {"status": "backend unavailable"}, 503
-    except Exception:
-        return {"status": "backend unreachable"}, 503
+        return {"status": f"backend returned {res.status_code}"}, 503
+    except requests.exceptions.Timeout:
+        print(f"TIMEOUT connecting to {BACKEND_BASE}", flush=True)
+        return {"status": "timeout"}, 503
+    except requests.exceptions.ConnectionError as e:
+        print(f"CONNECTION ERROR: {str(e)}", flush=True)
+        return {"status": f"connection error"}, 503
+    except Exception as e:
+        print(f"UNEXPECTED ERROR: {type(e).__name__}: {str(e)}", flush=True)
+        return {"status": f"error"}, 503
 
 if __name__ == "__main__":
     port = int(os.getenv("FRONTEND_PORT", 5000))
