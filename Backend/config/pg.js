@@ -5,8 +5,8 @@ const pgconfig = {
   password: process.env.POSTGRES_PASSWORD || "postgres",
   database: process.env.POSTGRES_DB || "postgres",
   host: process.env.POSTGRES_HOST || "localhost",
-  port: parseInt(process.env.POSTGRES_PORT || "30000", 10),
+  port: parseInt(process.env.POSTGRES_PORT || "5432", 10),
 };
-console.log("config", pgconfig);
+console.log("postgres config", pgconfig);
 const pool = new Pool(pgconfig);
 export default pool;
