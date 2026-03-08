@@ -1,6 +1,5 @@
 # Node.js
-Backend/node_modules/
-Kafka-Consumer/node_modules/
+node_modules/
 
 # Python
 __pycache__/
