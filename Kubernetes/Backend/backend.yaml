@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: tsandas/sre-playground-backend:1.0.8
+          image: tsandas/sre-playground-backend:1.0.9
           env:
             - name: POSTGRES_USER
               valueFrom:

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: flask-app
-          image: tsandas/sre-playground-frontend:1.0.4
+          image: tsandas/sre-playground-frontend:1.0.6
           ports:
             - containerPort: 5000
           env:
@@ -25,12 +25,12 @@ spec:
                   name: frontend-configuration
                   key: BACKEND_BASE
           resources:
-            requests:
-              memory: "64Mi"
-              cpu: "50m"
-            limits:
-              memory: "64Mi"
-              cpu: "50m"
+            # requests:
+            #   memory: "64Mi"
+            #   cpu: "50m"
+            # limits:
+            #   memory: "64Mi"
+            #   cpu: "50m"
           startupProbe:
             httpGet:
               path: /healthz/live
