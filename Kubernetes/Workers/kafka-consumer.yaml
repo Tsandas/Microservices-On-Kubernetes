@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: kafka-consumer
-          image: tsandas/sre-playground-worker:1.0.0
+          image: tsandas/sre-playground-worker:1.0.2
           env:
             - name: KAFKA_BROKER
               valueFrom:
@@ -42,6 +42,11 @@ spec:
                 secretKeyRef:
                   name: kafka-consumer-secret
                   key: REDIS_PORT
+            - name: PORT
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-consumer-secret
+                  key: PORT
           resources:
           # requests:
           #   memory: "64Mi"
@@ -49,28 +54,43 @@ spec:
           # limits:
           #   memory: "64Mi"
           #   cpu: "50m"
-          # startupProbe:
-          #   httpGet:
-          #     path: /healthz/live
-          #     port: 3000
-          #   failureThreshold: 5
-          #   periodSeconds: 30
-          # readinessProbe:
-          #   httpGet:
-          #     path: /healthz/ready
-          #     port: 3000
-          #   initialDelaySeconds: 10
-          #   periodSeconds: 10
-          #   timeoutSeconds: 2
-          #   failureThreshold: 3
-          # livenessProbe:
-          #   httpGet:
-          #     path: /healthz/live
-          #     port: 3000
-          #   initialDelaySeconds: 10
-          #   periodSeconds: 10
-          #   timeoutSeconds: 2
-          #   failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /healthz/live
+              port: 3000
+            initialDelaySeconds: 10
+            failureThreshold: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /healthz/ready
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /healthz/live
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-consumer-service
+  namespace: workers
+spec:
+  selector:
+    app: kafka-consumer
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+  type: ClusterIP
 ---
 apiVersion: v1
 kind: Secret
@@ -84,58 +104,45 @@ data:
   KAFKA_GROUP_ID: d29ya2VyLWdyb3Vw
   REDIS_URL: cmVkaXMtc2VydmljZS5yZWRpcy5zdmMuY2x1c3Rlci5sb2NhbA==
   REDIS_PORT: NjM3OQ==
+  PORT: MzAwMA==
 # svc-name.namespace.svc.cluster.local
 # svc-name.namespace.svc.cluster.local:port for kafka
 ---
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   name: kafka-consumer-service
-#   namespace: workers
-# spec:
-#   selector:
-#     app: kafka-consumer
-#   ports:
-#     - protocol: TCP
-#       port: 3000
-#       targetPort: 3000
-#   type: ClusterIP
----
-# apiVersion: networking.k8s.io/v1
-# kind: NetworkPolicy
-# metadata:
-#   name: kafka-consumer-network-policy
-#   namespace: workers
-# spec:
-#   podSelector:
-#     matchLabels:
-#       app: kafka-consumer
-#   policyTypes:
-#     - Ingress
-#     - Egress
-#   ingress: {}
-#   egress:
-#     - to:
-#         - namespaceSelector:
-#             matchLabels:
-#               kubernetes.io/metadata.name: redis
-#       ports:
-#         - protocol: TCP
-#           port: 6379
-#     - to:
-#         - namespaceSelector:
-#             matchLabels:
-#               kubernetes.io/metadata.name: kafka
-#       ports:
-#         - protocol: TCP
-#           port: 9092
-#     - to:
-#         - namespaceSelector:
-#             matchLabels:
-#               kubernetes.io/metadata.name: kube-system
-#       ports:
-#         - protocol: UDP
-#           port: 53
-#         - protocol: TCP
-#           port: 53
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kafka-consumer-network-policy
+  namespace: workers
+spec:
+  podSelector:
+    matchLabels:
+      app: kafka-consumer
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress: []
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kafka
+      ports:
+        - protocol: TCP
+          port: 9092
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
 ---
