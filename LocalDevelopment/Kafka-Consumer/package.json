@@ -12,6 +12,7 @@
   "type": "module",
   "dependencies": {
     "dotenv": "^17.3.1",
+    "express": "^5.2.1",
     "ioredis": "^5.10.0",
     "kafkajs": "^2.2.4"
   }

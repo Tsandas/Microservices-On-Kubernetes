@@ -101,5 +101,5 @@ app.get("/events", async (req, res) => {
 app.listen(PORT, async () => {
   await pool.connect();
   await connectProducer();
-  console.log(`Backend server running on http://localhost:${PORT}`);
+  console.log(`Backend server running on ${HOSTNAME}:${PORT}`);
 });

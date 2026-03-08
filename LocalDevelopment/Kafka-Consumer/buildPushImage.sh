@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# check if version was provided
 if [ -z "$1" ]; then
   echo "Usage: $0 <version>"
   exit 1
