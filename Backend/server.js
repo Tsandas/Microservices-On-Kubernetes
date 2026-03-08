@@ -53,11 +53,6 @@ app.post("/user", async (req, res) => {
   const values = [username, password];
   const result = await pool.query(query, values);
 
-  await sendMessage(process.env.KAFKA_TOPIC, {
-    event: "user_created",
-    username,
-    timestamp: Date.now(),
-  });
   console.log({ message: "Event produced", username });
 
   res.status(201).json({

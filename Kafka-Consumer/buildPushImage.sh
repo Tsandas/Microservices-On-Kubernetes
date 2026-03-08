@@ -7,7 +7,7 @@ if [ -z "$1" ]; then
 fi
 
 VERSION="1.0.$1"
-IMAGE="sre-playground-backend"
+IMAGE="sre-playground-worker"
 DOCKER_USER="tsandas"
 
 echo "Building image ${IMAGE}:${VERSION}"

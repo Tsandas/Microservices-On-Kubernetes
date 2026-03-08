@@ -2,14 +2,17 @@ import { Kafka } from "kafkajs";
 import dotenv from "dotenv";
 dotenv.config();
 
-const kafka = new Kafka({
-  clientId: "worker",
+const kafkaConfig = {
+  clientId: "backend",
   brokers: [process.env.KAFKA_BROKER || "localhost:9092"],
-});
+};
+
+const kafka = new Kafka(kafkaConfig);
 
 const consumer = kafka.consumer({ groupId: "worker-group" });
 
 export const connectConsumer = async () => {
+  console.log("Kafka config", kafkaConfig);
   await consumer.connect();
   await consumer.subscribe({
     topic: process.env.KAFKA_TOPIC || "user-events",

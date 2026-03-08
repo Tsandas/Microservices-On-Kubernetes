@@ -2,11 +2,13 @@ import Redis from "ioredis";
 import dotenv from "dotenv";
 dotenv.config();
 
-console.log("Redis url: " + process.env.REDIS_URL);
-let client = new Redis({
+const redisConfig = {
   host: process.env.REDIS_URL,
   port: process.env.REDIS_PORT,
-});
+};
+
+console.log("Redis config: ", redisConfig);
+let client = new Redis(redisConfig);
 
 client.on("ready", () => console.log("Redis connected"));
 client.on("error", (err) => console.error("Redis error:", err));

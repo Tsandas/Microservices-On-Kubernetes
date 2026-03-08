@@ -23,3 +23,5 @@ services:
 # /opt/kafka/bin $ ./kafka-console-producer.sh --bootstrap-server localhost:9092 --topic test-topic
 
 # /opt/kafka/bin $ ./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic --from-beginning
+
+# /opt/kafka/bin $ ./kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic test-topic

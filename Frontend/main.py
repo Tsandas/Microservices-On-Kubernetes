@@ -568,7 +568,7 @@ HTML = """
           return;
         }
         try {
-          const res = await fetch('/create-user', {
+          const res = await fetch('/user', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password }),
