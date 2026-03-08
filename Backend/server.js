@@ -1,6 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
-//import pool from "./config/pg.js";
+import pool from "./config/pg.js";
 import { connectProducer, sendMessage } from "./config/kafka.js";
 import { redisClient } from "./config/redis.js";
 import cors from "cors";
@@ -29,11 +29,9 @@ app.get("/healthz/ready", async (req, res) => {
     const pong = await redisClient.ping();
     if (pong !== "PONG") throw new Error("Redis ping failed");
 
-    await sendMessage("healthcheck", { value: "ping" });
-
     res.status(200).json({ status: "ready" });
   } catch (error) {
-    res.status(500).json({ status: "unready", error: error.message });
+    res.status(503).json({ status: "unready", error: error.message });
   }
 });
 
@@ -55,12 +53,12 @@ app.post("/user", async (req, res) => {
   const values = [username, password];
   const result = await pool.query(query, values);
 
-  await sendMessage("test-topic", {
+  await sendMessage(process.env.KAFKA_TOPIC, {
     event: "user_created",
     username,
     timestamp: Date.now(),
   });
-  res.json({ message: "Event produced", username });
+  console.log({ message: "Event produced", username });
 
   res.status(201).json({
     userId: result.rows[0].id,
@@ -81,7 +79,7 @@ app.post("/kafka-produce", async (req, res) => {
   if (!username) {
     return res.status(400).json({ error: "username is required" });
   }
-  await sendMessage("test-topic", {
+  await sendMessage(process.env.KAFKA_TOPIC, {
     event: "user_created",
     username,
     timestamp: Date.now(),

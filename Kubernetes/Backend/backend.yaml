@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: tsandas/sre-playground-backend:1.0.3
+          image: tsandas/sre-playground-backend:1.0.8
           env:
             - name: POSTGRES_USER
               valueFrom:
@@ -42,6 +42,31 @@ spec:
                 secretKeyRef:
                   name: backend-secret
                   key: POSTGRES_PORT
+            - name: KAFKA_BROKER
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: KAFKA_BROKER
+            - name: KAFKA_TOPIC
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: KAFKA_TOPIC
+            - name: KAFKA_GROUP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: KAFKA_GROUP_ID
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: REDIS_URL
+            - name: REDIS_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: REDIS_PORT
           resources:
             requests:
               memory: "64Mi"
@@ -86,6 +111,13 @@ data:
   POSTGRES_DB: cG9zdGdyZXM=
   POSTGRES_HOST: cG9zdGdyZXMtZGItcG9zdGdyZXNxbC5kYXRhYmFzZS5zdmMuY2x1c3Rlci5sb2NhbA==
   POSTGRES_PORT: NTQzMg==
+  KAFKA_BROKER: a2Fma2EtY2x1c3Rlci1rYWZrYS1ib290c3RyYXAua2Fma2Euc3ZjLmNsdXN0ZXIubG9jYWw6OTA5Mg==
+  KAFKA_TOPIC: dXNlci1ldmVudHM=
+  KAFKA_GROUP_ID: d29ya2VyLWdyb3Vw
+  REDIS_URL: cmVkaXMtc2VydmljZS5yZWRpcy5zdmMuY2x1c3Rlci5sb2NhbA==
+  REDIS_PORT: NjM3OQ==
+# svc-name.namespace.svc.cluster.local
+# svc-name.namespace.svc.cluster.local:port for kafka
 ---
 apiVersion: v1
 kind: Service
@@ -126,6 +158,20 @@ spec:
       ports:
         - protocol: TCP
           port: 5432
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kafka
+      ports:
+        - protocol: TCP
+          port: 9092
     - to:
         - namespaceSelector:
             matchLabels:
