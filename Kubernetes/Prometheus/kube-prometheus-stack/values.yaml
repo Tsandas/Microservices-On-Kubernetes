@@ -4,11 +4,11 @@
 
 ## Provide a name in place of kube-prometheus-stack for `app:` labels
 ##
-nameOverride: ""
+nameOverride: "kube-prometheus-stack"
 
 ## Override the deployment namespace
 ##
-namespaceOverride: ""
+namespaceOverride: "monitoring"
 
 ## Provide a k8s version to auto dashboard import script example: kubeTargetVersionOverride: 1.26.6
 ##
@@ -20,7 +20,7 @@ kubeVersionOverride: ""
 
 ## Provide a name to substitute for the full names of resources
 ##
-fullnameOverride: "kubernetes-prometheus-stack"
+fullnameOverride: "kube-prometheus-stack"
 
 ## Labels to apply to all resources
 ##
@@ -500,6 +500,37 @@ alertmanager:
     minAvailable: 1
     # maxUnavailable: ""
     unhealthyPodEvictionPolicy: AlwaysAllow
+
+  ## Enable vertical pod autoscaler support for Alertmanager
+  ## ref: https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler
+  ##
+  verticalPodAutoscaler:
+    enabled: false
+
+    # Recommender responsible for generating recommendation for the object.
+    # List should be empty (then the default recommender will generate the recommendation)
+    # or contain exactly one recommender.
+    # recommenders:
+    # - name: custom-recommender-performance
+
+    # List of resources that the vertical pod autoscaler can control. Defaults to cpu and memory
+    controlledResources: []
+    # Specifies which resource values should be controlled: RequestsOnly or RequestsAndLimits.
+    # controlledValues: RequestsAndLimits
+
+    # Define the max allowed resources for the pod
+    maxAllowed: {}
+    # cpu: 200m
+    # memory: 100Mi
+    # Define the min allowed resources for the pod
+    minAllowed: {}
+    # cpu: 200m
+    # memory: 100Mi
+
+    updatePolicy:
+      # Specifies whether recommended updates are applied when a Pod is started and whether recommended updates
+      # are applied during the life of a Pod. Possible values are "Off", "Initial", "Recreate", and "InPlaceOrRecreate".
+      updateMode: Recreate
 
   ## Alertmanager configuration directives
   ## ref: https://prometheus.io/docs/alerting/configuration/#configuration-file
@@ -1137,7 +1168,7 @@ alertmanager:
     containers: []
     # containers:
     # - name: oauth-proxy
-    #   image: quay.io/oauth2-proxy/oauth2-proxy:v7.14.2
+    #   image: quay.io/oauth2-proxy/oauth2-proxy:v7.14.3
     #   args:
     #   - --upstream=http://127.0.0.1:9093
     #   - --http-address=0.0.0.0:8081
@@ -1224,7 +1255,7 @@ alertmanager:
 ##
 grafana:
   enabled: true
-  namespaceOverride: "grafana"
+  namespaceOverride: ""
 
   ## ForceDeployDatasources Create datasource configmap even if grafana deployment has been disabled
   ##
@@ -1330,12 +1361,12 @@ grafana:
   ingress:
     ## If true, Grafana Ingress will be created
     ##
-    enabled: false
+    enabled: true
 
     ## IngressClassName for Grafana Ingress.
     ## Should be provided if Ingress is enable.
     ##
-    # ingressClassName: nginx
+    ingressClassName: nginx
 
     ## Annotations for Grafana Ingress
     ##
@@ -1352,7 +1383,8 @@ grafana:
     ##
     # hosts:
     #   - grafana.domain.com
-    hosts: []
+    hosts: 
+      - grafana.localhost
 
     ## Path for grafana ingress
     path: /
@@ -2167,7 +2199,7 @@ kubeDns:
 ## Component scraping etcd
 ##
 kubeEtcd:
-  enabled: false
+  enabled: true
 
   ## If your etcd is not deployed as a pod, specify IPs it can be found on
   ##
@@ -2934,7 +2966,7 @@ prometheusOperator:
       image:
         registry: ghcr.io
         repository: jkroepke/kube-webhook-certgen
-        tag: 1.7.7
+        tag: 1.7.8
         sha: ""
         pullPolicy: IfNotPresent
       resources: {}
@@ -3320,8 +3352,8 @@ prometheusOperator:
       # Specifies minimal number of replicas which need to be alive for VPA Updater to attempt pod eviction
       # minReplicas: 1
       # Specifies whether recommended updates are applied when a Pod is started and whether recommended updates
-      # are applied during the life of a Pod. Possible values are "Off", "Initial", "Recreate", and "Auto".
-      updateMode: Auto
+      # are applied during the life of a Pod. Possible values are "Off", "Initial", "Recreate", and "InPlaceOrRecreate".
+      updateMode: Recreate
 
   ## Prometheus-operator image
   ##
@@ -3583,6 +3615,11 @@ prometheus:
     ##
     reloaderWebPort: 8080
 
+    ## Port to expose for Prometheus Reloader
+    ## Only used if service.type is 'NodePort'
+    ##
+    reloaderWebNodePort: null
+
     ## List of IP addresses at which the Prometheus server service is available
     ## Ref: https://kubernetes.io/docs/concepts/services-networking/service/#external-ips
     ##
@@ -3679,6 +3716,37 @@ prometheus:
     # maxUnavailable: ""
     unhealthyPodEvictionPolicy: AlwaysAllow
 
+  ## Enable vertical pod autoscaler support for Prometheus
+  ## ref: https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler
+  ##
+  verticalPodAutoscaler:
+    enabled: false
+
+    # Recommender responsible for generating recommendation for the object.
+    # List should be empty (then the default recommender will generate the recommendation)
+    # or contain exactly one recommender.
+    # recommenders:
+    # - name: custom-recommender-performance
+
+    # List of resources that the vertical pod autoscaler can control. Defaults to cpu and memory
+    controlledResources: []
+    # Specifies which resource values should be controlled: RequestsOnly or RequestsAndLimits.
+    # controlledValues: RequestsAndLimits
+
+    # Define the max allowed resources for the pod
+    maxAllowed: {}
+    # cpu: 200m
+    # memory: 100Mi
+    # Define the min allowed resources for the pod
+    minAllowed: {}
+    # cpu: 200m
+    # memory: 100Mi
+
+    updatePolicy:
+      # Specifies whether recommended updates are applied when a Pod is started and whether recommended updates
+      # are applied during the life of a Pod. Possible values are "Off", "Initial", "Recreate", and "InPlaceOrRecreate".
+      updateMode: Recreate
+
   # Ingress exposes thanos sidecar outside the cluster
   thanosIngress:
     enabled: false
@@ -3729,9 +3797,9 @@ prometheus:
   #     someoneelse:$apr1$DMZX2Z4q$6SbQIfyuLQd.xmo/P0m2c.
 
   ingress:
-    enabled: false
+    enabled: true
 
-    ingressClassName: ""
+    ingressClassName: "nginx"
 
     annotations: {}
     labels: {}
@@ -3744,7 +3812,8 @@ prometheus:
     ##
     # hosts:
     #   - prometheus.domain.com
-    hosts: []
+    hosts: 
+      - prometheus.localhost
 
     ## Paths to use for ingress rules - one path should match the prometheusSpec.routePrefix
     ##
@@ -4045,7 +4114,7 @@ prometheus:
     image:
       registry: quay.io
       repository: prometheus/prometheus
-      tag: v3.9.1
+      tag: v3.10.0
       sha: ""
       pullPolicy: IfNotPresent
 
@@ -4188,7 +4257,6 @@ prometheus:
     ## Namespaces to be selected for ServiceMonitor discovery.
     ##
     serviceMonitorNamespaceSelector: {}
-
     ## Example which selects ServiceMonitors in namespaces with label "prometheus" set to "somelabel"
     # serviceMonitorNamespaceSelector:
     #   matchLabels:
@@ -4270,7 +4338,7 @@ prometheus:
 
     ## Maximum size of metrics
     ## Unit format should be in the form of "50GiB"
-    retentionSize: ""
+    retentionSize: "512MiB"
 
     ## Allow out-of-order/out-of-bounds samples ingested into Prometheus for a specified duration
     ## See https://prometheus.io/docs/prometheus/latest/configuration/configuration/#tsdb
@@ -4371,17 +4439,15 @@ prometheus:
     ## Prometheus StorageSpec for persistent data
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/platform/storage.md
     ##
-    storageSpec: {}
-    ## Using PersistentVolumeClaim
-    ##
-    #  volumeClaimTemplate:
-    #    spec:
-    #      storageClassName: gluster
-    #      accessModes: ["ReadWriteOnce"]
-    #      resources:
-    #        requests:
-    #          storage: 50Gi
-    #      selector: {}
+    storageSpec: 
+      volumeClaimTemplate:
+        spec:
+          storageClassName: local-path
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 768Gi
+          # selector: {}
 
     ## Using tmpfs volume
     ##
@@ -4566,7 +4632,7 @@ prometheus:
     containers: []
     # containers:
     # - name: oauth-proxy
-    #   image: quay.io/oauth2-proxy/oauth2-proxy:v7.14.2
+    #   image: quay.io/oauth2-proxy/oauth2-proxy:v7.14.3
     #   args:
     #   - --upstream=http://127.0.0.1:9090
     #   - --http-address=0.0.0.0:8081
@@ -5450,13 +5516,14 @@ cleanPrometheusOperatorObjectNames: false
 ## If dict, keys are ignored and only values are used.
 ## Items contained within extraObjects can be defined as dict or string and are passed through tpl.
 extraManifests: 
+
   - apiVersion: monitoring.coreos.com/v1
     kind: ServiceMonitor
     metadata:
       name: postgres-exporter
       namespace: database
       labels:
-        release: kubernetes-prometheus-stack  # must match Prometheus serviceMonitorSelector
+        release: kube-prometheus-stack  # must match Prometheus serviceMonitorSelector
     spec:
       selector:
         matchLabels:
@@ -5467,23 +5534,32 @@ extraManifests:
       endpoints:
         - port: http-metrics
           path: /metrics
-          interval: 30s
+          interval: 60s
 
-  - apiVersion: monitoring.coreos.com/v1
-    kind: ServiceMonitor
-    metadata:
-      name: postgres-exporter-read
-      namespace: database
-      labels:
-        release: kubernetes-prometheus-stack
-    spec:
-      selector:
-        matchLabels:
-          app.kubernetes.io/component: metrics-read
-      namespaceSelector:
-        matchNames:
-          - database
-      endpoints:
-        - port: http-metrics
-          path: /metrics
-          interval: 30s
+
+# PS C:\Users\georg\Desktop\SRE - Playground\Kubernetes\Prometheus> helm install kube-prometheus-stack .\kube-prometheus-stack\ --namespace monitoring
+# NAME: kube-prometheus-stack
+# LAST DEPLOYED: Sun Mar  8 15:49:31 2026
+# NAMESPACE: monitoring
+# STATUS: deployed
+# REVISION: 1
+# TEST SUITE: None
+# NOTES:
+# kube-prometheus-stack has been installed. Check its status by running:
+#   kubectl --namespace monitoring get pods -l "release=kube-prometheus-stack"
+
+# Get Grafana 'admin' user password by running:
+
+#   kubectl --namespace monitoring get secrets kube-prometheus-stack-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
+
+# Access Grafana local instance:
+
+#   export POD_NAME=$(kubectl --namespace monitoring get pod -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=kube-prometheus-stack" -oname)
+#   kubectl --namespace monitoring port-forward $POD_NAME 3000
+
+# Get your grafana admin user password by running:
+
+#   kubectl get secret --namespace monitoring -l app.kubernetes.io/component=admin-secret -o jsonpath="{.items[0].data.admin-password}" | base64 --decode ; echo
+
+
+# Visit https://github.com/prometheus-operator/kube-prometheus for instructions on how to create & configure Alertmanager and Prometheus instances using the Operator.

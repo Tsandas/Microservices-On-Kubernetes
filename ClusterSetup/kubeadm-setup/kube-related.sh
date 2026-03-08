@@ -7,25 +7,32 @@ sudo apt-get update
 sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 
+# it wont run if cluster not setup, in nodes
 # sudo systemctl enable --now kubelet
-
-
-# not needed
-# sudo nano /etc/netplan/00-installer-config.yaml
-# network:
-#   ethernets:
-#     enp0s3:
-#       dhcp4: true          # NAT adapter — keep on DHCP for internet
-#     enp0s8:
-#       dhcp4: no
-#       addresses:
-#         - {ipadd}/24
-#   version: 2
-# sudo netplan apply
-
 
 # sudo nano /etc/default/kubelet
 # KUBELET_EXTRA_ARGS=--node-ip={ipad}
 
-
 # Create default storage class
+
+# Tip
+# If u want metrics from kube-scheduler, control-manager, etcd
+# Make sure to change these default settings
+# sudo vi /etc/kubernetes/manifests/kube-controller-manager.yaml
+# sudo vi /etc/kubernetes/manifests/kube-scheduler.yaml
+# sudo vi /etc/kubernetes/manifests/etcd.yaml
+
+# - --bind-address=127.0.0.1
+# change to:
+# - --bind-address=0.0.0.0
+# - --listen-metrics-urls=http://127.0.0.1:2381
+# change to:
+# - --listen-metrics-urls=http://0.0.0.0:2381
+
+# For proxy, but if u use calico probably kubeproxy is not enabled
+# kubectl edit configmap kube-proxy -n kube-system
+# change:
+# metricsBindAddress: ""
+# to:
+# metricsBindAddress: "0.0.0.0:10249"
+# kubectl rollout restart daemonset kube-proxy -n kube-system
