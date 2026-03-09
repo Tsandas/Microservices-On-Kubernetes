@@ -8,6 +8,5 @@ Workloads
 - Horizontal Pod Autoscaler on the backend
 
 Security
-- Dedicated ServiceAccounts per application
 - Security context on pods (runAsNonRoot, readOnlyRootFilesystem, dropped capabilities)
 - RBAC scoped to least privilege

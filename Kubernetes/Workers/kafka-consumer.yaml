@@ -13,6 +13,7 @@ spec:
       labels:
         app: kafka-consumer
     spec:
+      serviceAccount: kafka-consumer-sa
       containers:
         - name: kafka-consumer
           image: tsandas/sre-playground-worker:1.0.2
@@ -146,3 +147,9 @@ spec:
         - protocol: TCP
           port: 53
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kafka-consumer-sa
+  namespace: workers
+automountServiceAccountToken: false
