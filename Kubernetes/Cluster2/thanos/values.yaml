@@ -85,8 +85,7 @@ image:
 ## @param objstoreConfig The [objstore configuration](https://thanos.io/tip/thanos/storage.md/)
 ## Specify content for objstore.yml
 ##
-objstoreConfig: |
-
+objstoreConfig: ""
 ## @param indexCacheConfig The [index cache configuration](https://thanos.io/tip/components/store.md/)
 ## Specify content for index-cache.yml
 ##
@@ -98,7 +97,7 @@ bucketCacheConfig: ""
 ## @param existingObjstoreSecret Secret with Objstore Configuration
 ## Note: This will override objstoreConfig
 ##
-existingObjstoreSecret: ""
+existingObjstoreSecret: "thanos-stack-objstore-secret"
 ## @param existingObjstoreSecretItems Optional item list for specifying a custom Secret key. If so, path should be objstore.yml
 ##
 existingObjstoreSecretItems: []
@@ -174,7 +173,8 @@ query:
     sidecarsNamespace: ""
   ## @param query.stores Statically configure store APIs to connect with Thanos Query
   ##
-  stores: []
+  stores: 
+    - "kube-prometheus-stack-clus-thanos-discovery.prometheus.svc.cluster.local:10901"
   ## @param query.sdConfig Query Service Discovery Configuration
   ## Specify content for servicediscovery.yml
   ##

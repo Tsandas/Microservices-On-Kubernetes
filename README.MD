@@ -1,10 +1,27 @@
 # Microservices on Kubernetes
 
-A simple event-driven microservices application deployed on Kubernetes.
+A two-cluster Kubernetes setup. Cluster 1 runs the application and its own monitoring stack. Cluster 2 acts as the central observability cluster, aggregating metrics from all clusters into a single place.
 
 ---
 
-## Data Flow
+## Cluster 1 — Application & Monitoring
+
+3 VMs: 1 control plane, 2 worker nodes.
+
+Runs a simple event-driven microservices application alongside a full monitoring stack.
+
+### Application Stack
+```
+Browser
+└── Frontend (Flask)
+    └── Backend (Node.js)
+        ├── PostgreSQL (persistent storage)
+        │    └── PgAdmin (database management)
+        └── Kafka (event streaming)
+            └── Worker (Node.js Kafka consumer)
+                └── Redis (processed events & counters)
+
+### Data Flow
 
 1. User submits a registration via the frontend.
 2. Backend writes the user record to PostgreSQL.
@@ -14,55 +31,73 @@ A simple event-driven microservices application deployed on Kubernetes.
    - pushes the event to the recent events feed
 5. Frontend polls the backend for statistics and events, displaying live data without page reloads.
 
+### Monitoring Stack
 
-## Current Architecture
-```
+Deployed via kube-prometheus-stack helm chart.
 
-3 VMs
-• 1 Kubernetes control plane
-• 2 Kubernetes worker nodes
-
-Application stack running on Kubernetes:
-
-Browser
-└── Frontend (Flask)
-    └── Backend (Node.js)
-        ├── PostgreSQL (persistent storage)
-        │    └── PgAdmin (database management)
-        └── Kafka (event streaming)
-            └── Worker (Node.js Kafka consumer)
-                └── Redis (processed events & counters)
-
-Monitoring Layer
-
-├── Prometheus
+├── Prometheus + Thanos Sidecar
 │   ├── Kubernetes cluster metrics
 │   ├── Node metrics
 │   ├── Container metrics
-│   ├── PostgreSQL exporter
-│   └── Kafka exporter
-│
-└── Grafana
-    └── Dashboards visualizing Prometheus metrics
+│   └── PostgreSQL exporter
 
+The Thanos Sidecar runs alongside Prometheus, uploading metric blocks to S3 every 2 hours
+and exposing a gRPC endpoint for the Cluster 2 Querier to query live metrics.
 ```
+---
 
+## Cluster 2 — Central Observability
+
+1 VM: single-node cluster.
+
+Runs its own Prometheus for self-monitoring, plus the central Thanos stack that aggregates
+metrics from all clusters.
+
+### Monitoring Stack
+```
+├── Prometheus + Thanos Sidecar
+│   ├── Kubernetes cluster metrics
+│   └── Node metrics
+│
+├── Thanos Stack (bitnami/thanos helm chart)
+│   ├── Querier         — federates live metrics from all cluster sidecars via gRPC
+│   ├── Store Gateway   — serves historical metrics from S3
+│   └── Compactor       — compacts and downsamples blocks in S3
+│
+└── Grafana             — central dashboards, pointed at Thanos Querier as datasource
+
+### Object Storage
+
+└── AWS S3 — shared across all clusters, long-term metrics retention
+
+Prometheus blocks are uploaded by each cluster's Thanos Sidecar. The Store Gateway reads
+from this bucket to serve historical data. The Compactor runs against it periodically to
+reduce storage cost and improve query performance.
+```
+---
+
+## In Progress
+
+- [ ] Connect Cluster 1 Thanos Sidecar to Cluster 2 Querier for cross-cluster federation
+- [ ] Deploy central Grafana on Cluster 2 for unified dashboards across all clusters
 
 ---
 
 ## Repository Structure
 
-**Kubernetes/**  
-Contains Kubernetes manifests and Helm charts used to deploy the application.
+**Kubernetes/cluster1/**
+Manifests and Helm chart values for Cluster 1 — application deployments, kube-prometheus-stack config, and Thanos sidecar configuration.
 
-**LocalDevelopment/**  
-Contains service source code and Docker Compose setups for local testing:
+**Kubernetes/cluster2/**
+Manifests and Helm chart values for Cluster 2 — bitnami/thanos deployment and Prometheus self-monitoring config.
+
+**LocalDevelopment/**
+Service source code and Docker Compose setups for local testing:
 - Backend service
 - Frontend service
 - Worker service
 - Redis
 - Kafka
 
-**ClusterSetup/**  
-Notes and scripts for setting up the Kubernetes cluster using `kubeadm`.
-
+**ClusterSetup/**
+Notes and scripts for setting up Kubernetes clusters using `kubeadm`.

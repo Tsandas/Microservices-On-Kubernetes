@@ -3496,7 +3496,7 @@ prometheus:
   # Thanos sidecar on prometheus nodes
   # (Please remember to change ${kube-prometheus-stack.fullname} and ${namespace}. Not just copy and paste!)
   thanosService:
-    enabled: false
+    enabled: true
     annotations: {}
     labels: {}
 
@@ -3750,7 +3750,7 @@ prometheus:
   thanosIngress:
     enabled: false
 
-    ingressClassName: ""
+    ingressClassName: nginx
 
     annotations: {}
     labels: {}
@@ -3763,13 +3763,13 @@ prometheus:
 
     ## Hosts must be provided if Ingress is enabled.
     ##
-    hosts: []
-      # - thanos-gateway.domain.com
+    hosts: 
+      - thanos-sidecar-cluster2.localhost
 
     ## Paths to use for ingress rules
     ##
-    paths: []
-    # - /
+    paths: 
+     - /
 
     ## For Kubernetes >= 1.18 you should specify the pathType (determines how Ingress paths should be matched)
     ## See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#better-path-matching-with-path-types
@@ -4158,7 +4158,8 @@ prometheus:
 
     ## External labels to add to any time series or alerts when communicating with external systems
     ##
-    externalLabels: {}
+    externalLabels: 
+      cluster: "cluster2"
 
     ## enable --web.enable-remote-write-receiver flag on prometheus-server
     ##
@@ -4603,7 +4604,11 @@ prometheus:
     ## This is experimental and may change significantly without backward compatibility in any release.
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#thanosspec
     ##
-    thanos: {}
+    thanos:
+      objectStorageConfig:
+        existingSecret:
+          name: thanos-stack-objstore-secret
+          key: objstore.yml
       # secretProviderClass:
       #   provider: gcp
       #   parameters:
