@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prometheus
+  labels:
+    env: prod
+    managed-by: helm
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: thanos
+  labels:
+    env: prod
+    managed-by: helm

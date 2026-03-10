@@ -13,7 +13,26 @@ sudo apt-mark hold kubelet kubeadm kubectl
 # sudo nano /etc/default/kubelet
 # KUBELET_EXTRA_ARGS=--node-ip={ip-ad}
 
+#worker
+# kubeadm join .....
+
+# controplane
+kubeadm init
+sudo kubeadm init --apiserver-advertise-address={ipaddress} --pod-network-cidr=10.244.0.0/16
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/con
+
+# Deploy a cni
+# quick deploy kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.0/manifests/calico.yaml
 # Create default storage class
+# kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
+# kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+
+# Ingress controller Nginx (Bare metal)
+# kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.14.0/deploy/static/provider/baremetal/deploy.yaml 
+# check ingress-nginx controller svc and portforward 
 
 # Tip
 # If u want metrics from kube-scheduler, control-manager, etcd

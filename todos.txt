@@ -1,3 +1,5 @@
+Add second cluster and gather metrics from both in central thanos
+
 To be added
 Kafka UI
 Maybe log tracing? 

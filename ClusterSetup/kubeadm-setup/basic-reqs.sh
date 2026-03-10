@@ -1,3 +1,20 @@
+# Add host only adapter 
+sudo ip link set enp0s8 up
+sudo nano /etc/netplan/01-netcfg.yaml
+# network:
+#   version: 2
+#   ethernets:
+#     enp0s8:
+#       dhcp4: true
+sudo netplan apply
+
+
+sudo apt update
+sudo apt install -y openssh-server
+sudo systemctl enable ssh
+sudo systemctl start ssh
+
+
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
 overlay
 br_netfilter
