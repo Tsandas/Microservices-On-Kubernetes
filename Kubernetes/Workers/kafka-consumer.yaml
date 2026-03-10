@@ -13,9 +13,23 @@ spec:
       labels:
         app: kafka-consumer
     spec:
-      serviceAccount: kafka-consumer-sa
+      serviceAccountName: kafka-consumer-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - name: kafka-consumer
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            privileged: false
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
           image: tsandas/sre-playground-worker:1.0.2
           env:
             - name: KAFKA_BROKER
@@ -78,6 +92,12 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 2
             failureThreshold: 3
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
@@ -153,3 +173,4 @@ metadata:
   name: kafka-consumer-sa
   namespace: workers
 automountServiceAccountToken: false
+---

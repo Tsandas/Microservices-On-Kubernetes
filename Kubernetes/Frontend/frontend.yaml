@@ -13,9 +13,23 @@ spec:
       labels:
         app: frontend
     spec:
-      serviceAccount: frontend-sa
+      serviceAccountName: frontend-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - name: flask-app
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            privileged: false
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
           image: tsandas/sre-playground-frontend:1.0.6
           ports:
             - containerPort: 5000
@@ -133,3 +147,4 @@ metadata:
   name: frontend-sa
   namespace: frontend
 automountServiceAccountToken: false
+---

@@ -13,7 +13,7 @@ spec:
       labels:
         app: pgadmin
     spec:
-      serviceAccount: pgadmin-sa
+      serviceAccountName: pgadmin-sa
       containers:
         - name: pgadmin
           image: dpage/pgadmin4:latest
@@ -140,3 +140,4 @@ metadata:
   name: pgadmin-sa
   namespace: database
 automountServiceAccountToken: false
+---

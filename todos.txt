@@ -6,7 +6,3 @@ Workloads
 - Rolling update strategy tuned per deployment
 - Pod Disruption Budgets to maintain availability during disruptions
 - Horizontal Pod Autoscaler on the backend
-
-Security
-- Security context on pods (runAsNonRoot, readOnlyRootFilesystem, dropped capabilities)
-- RBAC scoped to least privilege
