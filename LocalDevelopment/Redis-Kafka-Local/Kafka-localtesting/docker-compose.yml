@@ -18,10 +18,10 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_NUM_PARTITIONS: 3
 
-# /opt/kafka/bin $ ./kafka-topics.sh --bootstrap-server localhost:9092 --create --topic test-topic
+# /opt/kafka/bin $ ./kafka-topics.sh --bootstrap-server localhost:9092 --create --topic user-events
 
-# /opt/kafka/bin $ ./kafka-console-producer.sh --bootstrap-server localhost:9092 --topic test-topic
+# /opt/kafka/bin $ ./kafka-console-producer.sh --bootstrap-server localhost:9092 --topic user-events
 
-# /opt/kafka/bin $ ./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic --from-beginning
+# /opt/kafka/bin $ ./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic user-events --from-beginning
 
-# /opt/kafka/bin $ ./kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic test-topic
+# /opt/kafka/bin $ ./kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic user-events

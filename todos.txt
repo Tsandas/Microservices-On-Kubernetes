@@ -1,10 +1,1 @@
-Add second cluster and gather metrics from both in central thanos
-
-To be added
-Kafka UI
-Maybe log tracing? 
-
-Workloads
-- Rolling update strategy tuned per deployment
-- Pod Disruption Budgets to maintain availability during disruptions
-- Horizontal Pod Autoscaler on the backend
+1) Configure sidecar on cluster1
