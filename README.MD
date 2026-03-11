@@ -76,13 +76,6 @@ reduce storage cost and improve query performance.
 ```
 ---
 
-## In Progress
-
-- [ ] Connect Cluster 1 Thanos Sidecar to Cluster 2 Querier for cross-cluster federation
-- [ ] Deploy central Grafana on Cluster 2 for unified dashboards across all clusters
-
----
-
 ## Repository Structure
 
 **Kubernetes/cluster1/**
