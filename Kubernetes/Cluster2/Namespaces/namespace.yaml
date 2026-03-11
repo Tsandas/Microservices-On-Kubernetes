@@ -14,3 +14,11 @@ metadata:
   labels:
     env: prod
     managed-by: helm
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: grafana
+  labels:
+    env: prod
+    managed-by: helm

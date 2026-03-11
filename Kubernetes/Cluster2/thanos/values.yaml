@@ -175,6 +175,7 @@ query:
   ##
   stores: 
     - "kube-prometheus-stack-clus-thanos-discovery.prometheus.svc.cluster.local:10901"
+    - "192.168.56.102:30901"
   ## @param query.sdConfig Query Service Discovery Configuration
   ## Specify content for servicediscovery.yml
   ##

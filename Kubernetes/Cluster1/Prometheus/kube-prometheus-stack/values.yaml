@@ -1254,7 +1254,7 @@ alertmanager:
 ## Using default values from https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
 ##
 grafana:
-  enabled: true
+  enabled: false
   namespaceOverride: ""
 
   ## ForceDeployDatasources Create datasource configmap even if grafana deployment has been disabled
@@ -3497,7 +3497,7 @@ prometheus:
   # Thanos sidecar on prometheus nodes
   # (Please remember to change ${kube-prometheus-stack.fullname} and ${namespace}. Not just copy and paste!)
   thanosService:
-    enabled: false
+    enabled: true
     annotations: {}
     labels: {}
 
@@ -3563,7 +3563,7 @@ prometheus:
   # Service for external access to sidecar
   # Enabling this creates a service to expose thanos-sidecar outside the cluster.
   thanosServiceExternal:
-    enabled: false
+    enabled: true
     annotations: {}
     labels: {}
     loadBalancerIP: ""
@@ -3585,7 +3585,7 @@ prometheus:
 
     ## Service type
     ##
-    type: LoadBalancer
+    type: NodePort
 
     ## Port to expose on each node
     ##
@@ -4159,7 +4159,8 @@ prometheus:
 
     ## External labels to add to any time series or alerts when communicating with external systems
     ##
-    externalLabels: {}
+    externalLabels: 
+      cluster: "cluster1"
 
     ## enable --web.enable-remote-write-receiver flag on prometheus-server
     ##
@@ -4446,7 +4447,7 @@ prometheus:
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 768Gi
+              storage: 1Gi
           # selector: {}
 
     ## Using tmpfs volume
@@ -4602,7 +4603,11 @@ prometheus:
     ## This is experimental and may change significantly without backward compatibility in any release.
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#thanosspec
     ##
-    thanos: {}
+    thanos: 
+      objectStorageConfig:
+        existingSecret:
+          name: thanos-stack-objstore-secret
+          key: objstore.yml
       # secretProviderClass:
       #   provider: gcp
       #   parameters:
