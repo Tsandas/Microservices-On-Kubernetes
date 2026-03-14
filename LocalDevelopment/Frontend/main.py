@@ -1,12 +1,53 @@
 from flask import Flask, render_template_string, request, jsonify
+from prometheus_flask_exporter import PrometheusMetrics
+from prometheus_client import Counter, Histogram
 import requests
 import json
 import os
+import time
 
 app = Flask(__name__)
 
 HOSTNAME = os.getenv("HOSTNAME", "unknown")
 BACKEND_BASE = os.getenv("BACKEND_BASE", "http://localhost:3000")
+
+# ── Metrics setup ─────────────────────────────────────────────────────────────
+#
+# PrometheusMetrics auto-instruments every Flask route and exposes /metrics.
+#
+#   flask_http_request_total                  — request counter
+#   flask_http_request_duration_seconds       — latency histogram
+#   flask_http_request_exceptions_total       — unhandled exceptions
+#
+# default_labels stamps 
+#
+metrics = PrometheusMetrics(app, default_labels={"pod": HOSTNAME})
+
+# Counts registration attempts with a 'status' label: 'success' or 'failure'.
+# Lets you alert on:  rate(frontend_user_registrations_total{status="failure"}[5m]) > 0
+user_registrations_total = Counter(
+    "frontend_user_registrations_total",
+    "User registration attempts proxied by the frontend",
+    ["status"],   # 'success' | 'failure'
+)
+
+# Counts how many times the frontend couldn't reach the backend, by endpoint.
+# Useful for distinguishing "backend /user is down" vs "/stats is down".
+backend_proxy_errors_total = Counter(
+    "frontend_backend_proxy_errors_total",
+    "Errors when the frontend failed to reach the backend",
+    ["endpoint"],  # e.g. '/user', '/stats', '/events'
+)
+
+# Measures how long each type of backend call takes from the frontend's POV.
+# Separate from Flask's own latency — this isolates the backend hop specifically.
+backend_response_seconds = Histogram(
+    "frontend_backend_response_seconds",
+    "Latency of frontend → backend proxy calls",
+    ["endpoint"],
+)
+
+# ─────────────────────────────────────────────────────────────────────────────
 
 HTML = """
 <!doctype html>
@@ -597,26 +638,42 @@ HTML = """
 </html>
 """
 
+
 def fetch_stats():
+    endpoint = "/stats"
+    start = time.time()
     try:
-        res = requests.get(f"{BACKEND_BASE}/stats", timeout=2)
+        res = requests.get(f"{BACKEND_BASE}{endpoint}", timeout=2)
+        backend_response_seconds.labels(endpoint=endpoint).observe(time.time() - start)
         return res.json()
-    except:
+    except Exception:
+        backend_proxy_errors_total.labels(endpoint=endpoint).inc()
         return {"total_registrations": "—", "registrations_last_minute": "—"}
 
+
 def fetch_users():
+    endpoint = "/user"
+    start = time.time()
     try:
-        res = requests.get(f"{BACKEND_BASE}/user", timeout=2)
+        res = requests.get(f"{BACKEND_BASE}{endpoint}", timeout=2)
+        backend_response_seconds.labels(endpoint=endpoint).observe(time.time() - start)
         return res.json()
-    except:
+    except Exception:
+        backend_proxy_errors_total.labels(endpoint=endpoint).inc()
         return []
 
+
 def fetch_events():
+    endpoint = "/events"
+    start = time.time()
     try:
-        res = requests.get(f"{BACKEND_BASE}/events", timeout=2)
+        res = requests.get(f"{BACKEND_BASE}{endpoint}", timeout=2)
+        backend_response_seconds.labels(endpoint=endpoint).observe(time.time() - start)
         return res.json()
-    except:
+    except Exception:
+        backend_proxy_errors_total.labels(endpoint=endpoint).inc()
         return []
+
 
 def datetimeformat(ts):
     try:
@@ -649,13 +706,28 @@ def api_create_user():
     password = body.get("password")
     if not username or not password:
         return jsonify({"error": "username and password required"}), 400
+
+    endpoint = "/user"
+    start = time.time()
     try:
-        res = requests.post(f"{BACKEND_BASE}/user", json={"username": username, "password": password}, timeout=5)
+        res = requests.post(
+            f"{BACKEND_BASE}{endpoint}",
+            json={"username": username, "password": password},
+            timeout=5,
+        )
+        backend_response_seconds.labels(endpoint=endpoint).observe(time.time() - start)
+
         if res.status_code in (200, 201):
             requests.post(f"{BACKEND_BASE}/kafka-produce", json={"username": username}, timeout=2)
+            user_registrations_total.labels(status="success").inc()
             return jsonify({"ok": True}), 201
+
+        user_registrations_total.labels(status="failure").inc()
         return jsonify({"error": res.json().get("error", "Failed to create user")}), res.status_code
+
     except Exception as e:
+        backend_proxy_errors_total.labels(endpoint=endpoint).inc()
+        user_registrations_total.labels(status="failure").inc()
         return jsonify({"error": str(e)}), 500
 
 

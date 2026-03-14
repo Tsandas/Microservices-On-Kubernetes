@@ -5541,6 +5541,25 @@ extraManifests:
           path: /metrics
           interval: 60s
 
+  - apiVersion: monitoring.coreos.com/v1
+    kind: ServiceMonitor
+    metadata:
+      name: frontend-exporter
+      namespace: frontend
+      labels:
+        release: kube-prometheus-stack 
+    spec:
+      selector:
+        matchLabels:
+          svc: frontend
+      namespaceSelector:
+        matchNames:
+          - frontend
+      endpoints:
+        - port: http
+          path: /metrics
+          interval: 60s
+
 
 # PS C:\Users\georg\Desktop\SRE - Playground\Kubernetes\Prometheus> helm install kube-prometheus-stack .\kube-prometheus-stack\ --namespace monitoring
 # NAME: kube-prometheus-stack
