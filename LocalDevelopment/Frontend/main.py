@@ -643,7 +643,7 @@ def fetch_stats():
     endpoint = "/stats"
     start = time.time()
     try:
-        res = requests.get(f"{BACKEND_BASE}{endpoint}", timeout=2)
+        res = requests.get(f"{BACKEND_BASE}{endpoint}", timeout=5)
         backend_response_seconds.labels(endpoint=endpoint).observe(time.time() - start)
         return res.json()
     except Exception:
@@ -655,7 +655,7 @@ def fetch_users():
     endpoint = "/user"
     start = time.time()
     try:
-        res = requests.get(f"{BACKEND_BASE}{endpoint}", timeout=2)
+        res = requests.get(f"{BACKEND_BASE}{endpoint}", timeout=5)
         backend_response_seconds.labels(endpoint=endpoint).observe(time.time() - start)
         return res.json()
     except Exception:
@@ -667,7 +667,7 @@ def fetch_events():
     endpoint = "/events"
     start = time.time()
     try:
-        res = requests.get(f"{BACKEND_BASE}{endpoint}", timeout=2)
+        res = requests.get(f"{BACKEND_BASE}{endpoint}", timeout=5)
         backend_response_seconds.labels(endpoint=endpoint).observe(time.time() - start)
         return res.json()
     except Exception:
@@ -718,7 +718,7 @@ def api_create_user():
         backend_response_seconds.labels(endpoint=endpoint).observe(time.time() - start)
 
         if res.status_code in (200, 201):
-            requests.post(f"{BACKEND_BASE}/kafka-produce", json={"username": username}, timeout=2)
+            requests.post(f"{BACKEND_BASE}/kafka-produce", json={"username": username}, timeout=5)
             user_registrations_total.labels(status="success").inc()
             return jsonify({"ok": True}), 201
 

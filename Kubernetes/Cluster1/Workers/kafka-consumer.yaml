@@ -30,7 +30,7 @@ spec:
             capabilities:
               drop:
                 - ALL
-          image: tsandas/sre-playground-worker:1.0.2
+          image: tsandas/sre-playground-worker:1.0.3
           env:
             - name: KAFKA_BROKER
               valueFrom:

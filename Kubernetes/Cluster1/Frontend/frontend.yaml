@@ -30,7 +30,7 @@ spec:
             capabilities:
               drop:
                 - ALL
-          image: tsandas/sre-playground-frontend:1.0.8
+          image: tsandas/sre-playground-frontend:1.0.9
           ports:
             - containerPort: 5000
           env:

@@ -30,7 +30,7 @@ spec:
             capabilities:
               drop:
                 - ALL
-          image: tsandas/sre-playground-backend:1.0.9
+          image: tsandas/sre-playground-backend:1.0.10
           env:
             - name: POSTGRES_USER
               valueFrom:
@@ -85,10 +85,10 @@ spec:
           resources:
             requests:
               memory: "64Mi"
-              cpu: "50m"
+              cpu: "100m"
             limits:
               memory: "64Mi"
-              cpu: "50m"
+              cpu: "100m"
           ports:
             - containerPort: 3000
           startupProbe:
@@ -145,11 +145,14 @@ kind: Service
 metadata:
   name: backend-service
   namespace: backend
+  labels:
+    svc : backend
 spec:
   selector:
     app: backend
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 3000
       targetPort: 3000
   type: ClusterIP
@@ -171,6 +174,10 @@ spec:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: frontend
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
   egress:
     - to:
         - namespaceSelector:

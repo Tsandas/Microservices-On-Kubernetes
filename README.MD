@@ -2,6 +2,8 @@
 
 A two-cluster Kubernetes setup. Cluster 1 runs the application and its own monitoring stack. Cluster 2 acts as the central observability cluster, aggregating metrics from all clusters into a single place.
 
+![Cluster Architecture](./images/architecture.png "Cluster Architecture")
+
 ---
 
 ## Cluster 1 — Application & Monitoring

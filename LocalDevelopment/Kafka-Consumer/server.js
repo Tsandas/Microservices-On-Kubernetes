@@ -30,6 +30,7 @@ const handleMessage = async (event) => {
   await client.expire("registrations:last_minute", 60);
   await client.lpush("events:recent", JSON.stringify(event));
   await client.ltrim("events:recent", 0, 9);
+  await client.expire("events:recent", 3600);
   console.log("Processing event:", event);
 };
 
