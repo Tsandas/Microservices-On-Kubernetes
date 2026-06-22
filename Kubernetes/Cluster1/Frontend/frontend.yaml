@@ -13,6 +13,8 @@ spec:
       labels:
         app: frontend
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: worker2
       serviceAccountName: frontend-sa
       securityContext:
         runAsNonRoot: true

@@ -21,3 +21,4 @@ services:
 # docker exec my-redis redis-cli SET mykey "Hello from Docker"
 # docker exec my-redis redis-cli GET mykey
 # docker exec my-redis redis-cli DEL mykey
+# redis-cli LRANGE events:recent 0 -1

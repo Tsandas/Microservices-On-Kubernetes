@@ -13,6 +13,8 @@ spec:
       labels:
         app: pgadmin
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: worker2
       serviceAccountName: pgadmin-sa
       containers:
         - name: pgadmin

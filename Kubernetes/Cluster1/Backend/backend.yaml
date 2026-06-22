@@ -13,6 +13,8 @@ spec:
       labels:
         app: backend
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: worker2
       serviceAccountName: backend-sa
       securityContext:
         runAsNonRoot: true

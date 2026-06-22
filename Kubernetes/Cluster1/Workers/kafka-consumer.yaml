@@ -13,6 +13,8 @@ spec:
       labels:
         app: kafka-consumer
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: worker2
       serviceAccountName: kafka-consumer-sa
       securityContext:
         runAsNonRoot: true

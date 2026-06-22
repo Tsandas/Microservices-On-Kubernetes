@@ -41,7 +41,8 @@ tolerations: []
 affinity: {}
 annotations: {}
 labels: {}
-nodeSelector: {}
+nodeSelector:
+  kubernetes.io/hostname: worker1
 deploymentAnnotations: {}
 deploymentLabels: {}
 deploymentStrategy: {}
@@ -186,13 +187,13 @@ mavenBuilder:
     repository: ""
     name: maven-builder
     tag: ""
-resources:
-  limits:
-    memory: 384Mi
-    cpu: 1000m
-  requests:
-    memory: 384Mi
-    cpu: 200m
+resources: {}
+  # limits:
+  #   memory: 384Mi
+  #   cpu: 1000m
+  # requests:
+  #   memory: 384Mi
+  #   cpu: 200m
 livenessProbe:
   initialDelaySeconds: 10
   periodSeconds: 30

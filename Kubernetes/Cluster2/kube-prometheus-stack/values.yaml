@@ -4038,11 +4038,11 @@ prometheus:
     ## Defaults to 30s.
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/release-0.44/pkg/prometheus/promcfg.go#L180-L183
     ##
-    scrapeInterval: ""
+    scrapeInterval: "90s"
 
     ## Number of seconds to wait for target to respond before erroring
     ##
-    scrapeTimeout: ""
+    scrapeTimeout: "10s"
 
     ## List of scrape classes to expose to scraping objects such as
     ## PodMonitors, ServiceMonitors, Probes and ScrapeConfigs.
@@ -4061,7 +4061,7 @@ prometheus:
 
     ## Interval between consecutive evaluations.
     ##
-    evaluationInterval: ""
+    evaluationInterval: "30s"
 
     ## ListenLocal makes the Prometheus server listen on loopback, so that it does not bind against the Pod IP.
     ##
@@ -4334,11 +4334,11 @@ prometheus:
 
     ## How long to retain metrics
     ##
-    retention: 10d
+    retention: "1d"
 
     ## Maximum size of metrics
     ## Unit format should be in the form of "50GiB"
-    retentionSize: ""
+    retentionSize: "500MiB"
 
     ## Allow out-of-order/out-of-bounds samples ingested into Prometheus for a specified duration
     ## See https://prometheus.io/docs/prometheus/latest/configuration/configuration/#tsdb
